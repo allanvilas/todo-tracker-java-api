@@ -7,7 +7,7 @@ import app.dto.NewTaskDTO;
 import app.model.TodoTask;
 
 @Mapper(componentModel = "spring")
-public interface TaskMapper {
+public interface ITaskMapper {
 
     @Mapping(source = "taskName", target = "name")
     @Mapping(source = "taskDescription", target = "desc")

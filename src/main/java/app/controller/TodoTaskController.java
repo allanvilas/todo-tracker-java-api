@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import app.dto.CompleteTodoTaskDTO;
+import app.dto.NewTaskDTO;
 import app.model.TodoTask;
 import app.service.TodoTaskService;
 import jakarta.validation.Valid;
@@ -52,9 +53,9 @@ public class TodoTaskController {
     }
 
     @PostMapping
-    private ResponseEntity<String> createNewTask(@RequestBody HashMap<String, Object> todoTask,
+    private ResponseEntity<String> createNewTask(@Valid @RequestBody NewTaskDTO DTO,
             UriComponentsBuilder ucb) {
-        return todoTaskService.createNewTodoTask(todoTask, ucb);
+        return todoTaskService.createNewTodoTask(DTO, ucb);
     }
 
 }

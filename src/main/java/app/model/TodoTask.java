@@ -39,12 +39,12 @@ public class TodoTask {
 
     }
     
-    public TodoTask(String taskName, String taskDueDate, String taskDescription, Boolean taskIsImportant) {
-        TaskName = taskName;
-        TaskDueDate = LocalDateTime.parse(taskDueDate,DateTimeFormatter.ISO_OFFSET_DATE_TIME);
-        TaskDescription = taskDescription;
-        TaskIsImportant = taskIsImportant;
-    }
+    // public TodoTask(String taskName, String taskDueDate, String taskDescription, Boolean taskIsImportant) {
+    //     TaskName = taskName;
+    //     TaskDueDate = LocalDateTime.parse(taskDueDate,DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+    //     TaskDescription = taskDescription;
+    //     TaskIsImportant = taskIsImportant;
+    // }
 
     public Long getId() {
        return this.id;

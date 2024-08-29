@@ -2,41 +2,52 @@ package app.service;
 
 import java.net.URI;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Optional;
 
-import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import app.dto.CompleteTodoTaskDTO;
+import app.dto.NewTaskDTO;
+import app.interfaces.ITaskMapper;
 import app.model.TodoTask;
 import app.repository.TodoTaskRepository;
 import app.util.TaskFlags;
+import jakarta.validation.Valid;
 
+/**
+ * Service for managing TodoTask operations.
+ */
 @Service
 public class TodoTaskService {
 
     @Autowired
     TodoTaskRepository todoTaskRepository;
+    private final ITaskMapper taskMapper;
 
-    public ResponseEntity<String> createNewTodoTask(HashMap<String, Object> postedTodoTask, UriComponentsBuilder ucb) {
+    @Autowired
+    public TodoTaskService(ITaskMapper taskMapper) {
+        this.taskMapper = taskMapper;
+    }
 
-        String taskName = (String) postedTodoTask.get("taskName");
-        String taskDueDate = (String) postedTodoTask.get("taskDueDate");
-        String taskDescription = (String) postedTodoTask.get("taskDescription");
-        boolean taskIsImportant = (boolean) postedTodoTask.get("taskIsImportant");
+    /**
+     * Creates a new TodoTask.
+     *
+     * @param DTO Data Transfer Object containing details of the task to be created.
+     * @param ucb UriComponentsBuilder to build the URI of the created task.
+     * @return ResponseEntity with the location of the newly created task.
+     */
+    public ResponseEntity<String> createNewTodoTask(@Valid @RequestBody NewTaskDTO DTO, UriComponentsBuilder ucb) {
 
-        TodoTask newTodoTask = new TodoTask(taskName, taskDueDate, taskDescription, taskIsImportant);
+        TodoTask newTodoTask = taskMapper.todoTask(DTO);
 
         TodoTask savedTodoTask = todoTaskRepository.save(newTodoTask);
 
@@ -48,6 +59,12 @@ public class TodoTaskService {
         return ResponseEntity.created(locationOfNewTask).build();
     }
 
+    /**
+     * Finds a TodoTask by its ID.
+     *
+     * @param id The ID of the task to find.
+     * @return The TodoTask if found, otherwise null.
+     */
     public TodoTask findById(Long id) {
 
         Optional<TodoTask> todoTask = todoTaskRepository.findById(id);
@@ -59,6 +76,12 @@ public class TodoTaskService {
         }
     }
 
+    /**
+     * Finds all TodoTasks with pagination.
+     *
+     * @param pageable Pagination information.
+     * @return A page of TodoTasks.
+     */
     public Page<TodoTask> findAll(Pageable pageable) {
 
         Page<TodoTask> page = todoTaskRepository.findAll(
@@ -70,6 +93,12 @@ public class TodoTaskService {
         return page;
     }
 
+    /**
+     * Updates the flag of an existing TodoTask.
+     *
+     * @param DTO Data Transfer Object containing the task ID and the new flag status.
+     * @return ResponseEntity indicating the result of the update operation.
+     */
     public ResponseEntity<String> updateTaskFlag(CompleteTodoTaskDTO DTO) {
 
         if (todoTaskRepository.existsById((long) DTO.getTodoTaskId())) {
@@ -78,7 +107,7 @@ public class TodoTaskService {
             if (DTO.getFlag().equals(TaskFlags.COMPLETED)) {
                 changedTodoTask.setTaskIsCompleted(DTO.getCompleteStatus());
                 changedTodoTask.setTaskCompletedDate(LocalDateTime.now());
-               
+
             } else if (DTO.getFlag().equals(TaskFlags.IMPORTANT)) {
                 changedTodoTask.setTaskIsImportant(DTO.getCompleteStatus());
 
