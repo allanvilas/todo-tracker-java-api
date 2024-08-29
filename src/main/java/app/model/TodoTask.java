@@ -1,6 +1,8 @@
 package app.model;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Map;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,7 +17,7 @@ import jakarta.persistence.Table;
 @Table(name = "todo_task")
 public class TodoTask {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
         @Column(nullable = false)
@@ -23,22 +25,31 @@ public class TodoTask {
 
     @Column(nullable = false)
     LocalDateTime TaskDueDate;
-    String TaskDescription;
-    LocalDateTime TaskCreatedDate;
+    String TaskDescription = "";
+    LocalDateTime TaskCreatedDate = null;
     LocalDateTime TaskUpdateDate = null;
     Boolean TaskIsImportant = false;
     Boolean TaskIsDeleted = false;
     LocalDateTime TaskDeletedDate = null;
+    LocalDateTime TaskReactivatedAtDate = null;
     Boolean TaskIsCompleted = null;
     LocalDateTime TaskCompletedDate = null;
 
-    public TodoTask(String taskName, LocalDateTime taskDueDate, String taskDescription, Boolean taskIsImportant) {
+    public TodoTask() {
+
+    }
+    
+    public TodoTask(String taskName, String taskDueDate, String taskDescription, Boolean taskIsImportant) {
         TaskName = taskName;
-        TaskDueDate = taskDueDate;
+        TaskDueDate = LocalDateTime.parse(taskDueDate,DateTimeFormatter.ISO_OFFSET_DATE_TIME);
         TaskDescription = taskDescription;
         TaskIsImportant = taskIsImportant;
     }
 
+    public Long getId() {
+       return this.id;
+    }
+    
     public String getTaskName() {
         return TaskName;
     }
@@ -124,7 +135,7 @@ public class TodoTask {
     }
     
     @PreUpdate void onUpdate() {
-        TaskCreatedDate = LocalDateTime.now();
+        TaskUpdateDate = LocalDateTime.now();
     }
 
 }

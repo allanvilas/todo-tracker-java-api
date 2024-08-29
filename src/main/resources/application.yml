@@ -1,5 +1,13 @@
 spring:
-  application:
-    name: TodoApp
   config:
     import: optional:classpath:secrets.yml
+  application:
+    name: TodoApp
+  datasource:
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
